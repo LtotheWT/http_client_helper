@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
+import 'package:http/io_client.dart' as ioClient;
 
 import 'package:http/http.dart';
 import 'package:http_client_helper/src/cancellation_token.dart';
@@ -12,6 +14,16 @@ class HttpClientHelper {
   void set(Client value) {
     _httpClient = value;
   }
+
+  HttpClientHelper(){
+    HttpClient client = new HttpClient();
+    client.badCertificateCallback = ((X509Certificate cert, String host, int port) {
+      final isValidHost = host == "https://preorder.cupflick.com.au";
+      return isValidHost;
+    });
+    set(new ioClient.IOClient(client));
+  }
+
 
   //http get with cancel, delay try again
   static Future<Response> get(url,
